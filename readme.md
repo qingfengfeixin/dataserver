@@ -1,5 +1,15 @@
 
+# 依赖包
+```go
+go get github.com/Unknwon/goconfig
+go get github.com/bmizerany/pq
+go get github.com/gorhill/cronexpr
 ```
+
+
+
+
+```sql
 create or replace PROCEDURE sp_t1()
 language plpgsql
 as $$
@@ -37,6 +47,7 @@ jobno int,
 nexttime timestamp,
 interval varchar,
 what varchar,
+stat int default 0,
 primary key(jobno)
 );
 

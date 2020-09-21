@@ -6,11 +6,12 @@ import (
 )
 
 func testDb(ch chan int) {
-	db := connectDB()
-	callPro(db,"call sp_t2()")
+	dbt := &dbObj{}
+	dbt.connectDB()
+	dbt.callPro("call sp_t2()")
 	ch <- 1
 }
-func Testdb(t *testing.T){
+func Testdb(t *testing.T) {
 	ch := make(chan int)
 
 	go testDb(ch)
@@ -25,4 +26,3 @@ func Testdb(t *testing.T){
 	}
 
 }
-
