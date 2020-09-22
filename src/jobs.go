@@ -15,30 +15,20 @@ type job struct {
 }
 
 type jober interface {
-	intiJob()
 	queryJob()
 	setNextTime(db *dbObj)
 	setStat(db *dbObj, stat int)
 }
 
-func (this *job) intiJob() {
-	db := &dbObj{}
-	db.connectDB()
-	defer db.close()
+func  intiJob(db *dbObj) {
 	// 设置任务状态为0
-	stmt, err := db.db.Prepare("update ds_job set stat = $2")
-	if err != nil {
-		log.Println("fail to update:%v", err)
-	}
-	if _, err = stmt.Exec(0); err != nil {
+
+	if _, err := db.db.Exec("update ds_job set stat = $1", 0); err != nil {
 		log.Println(err)
 	}
 }
 
-func (this *job) queryJob() []job {
-	db := &dbObj{}
-	db.connectDB()
-	defer db.close()
+func queryJob(db *dbObj) []job {
 
 	now := time.Now()
 

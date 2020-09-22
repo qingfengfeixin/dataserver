@@ -5,9 +5,12 @@ import (
 )
 
 func init() {
+	//检查数据库连接
+	db := &dbObj{}
+	db.connectDB()
+	defer db.close()
 	//程序启动修改所有任务的状态字段为0
-	job := &job{}
-	job.intiJob()
+    intiJob(db)
 }
 
 func main() {

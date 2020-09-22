@@ -5,14 +5,15 @@ import (
 )
 
 func proRun() {
-	jobs := &job{}
+	db := &dbObj{}
+	db.connectDB()
+	defer db.close()
 
 	var rows []job
-	rows = jobs.queryJob()
+	rows = queryJob(db)
 
 	//执行存储过程
-	for _, j1 := range rows {
-		job := j1
+	for _, job := range rows {
 
 		go func() {
 
