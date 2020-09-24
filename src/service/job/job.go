@@ -1,12 +1,13 @@
-package main
+package job
 
 import (
 	"github.com/gorhill/cronexpr"
 	"log"
 	"time"
+	"utils/db"
 )
 
-type job struct {
+type JOB struct {
 	jobno    int
 	nexttime time.Time
 	interval string
@@ -15,31 +16,31 @@ type job struct {
 }
 
 type jober interface {
-	queryJob()
-	setNextTime(db *dbObj)
-	setStat(db *dbObj, stat int)
+	queryJob(db *db.DBOBJ)
+	setNextTime(db *db.DBOBJ)
+	setStat(db *db.DBOBJ, stat int)
 }
 
-func  intiJob(db *dbObj) {
+func  IntiJob(d *db.DBOBJ) {
 	// 设置任务状态为0
 
-	if _, err := db.db.Exec("update ds_job set stat = $1", 0); err != nil {
+	if _, err := d.DB.Exec("update ds_job set stat = $1", 0); err != nil {
 		log.Println(err)
 	}
 }
 
-func queryJob(db *dbObj) []job {
+func queryJob(db *db.DBOBJ) []JOB {
 
 	now := time.Now()
 
 	// 查询需要执行的存储过程,nexttime 过期的任务
-	rows, _ := db.db.Query("SELECT jobno,nexttime,interval,what FROM ds_job where stat=0 and nexttime <$1", now)
+	rows, _ := db.DB.Query("SELECT jobno,nexttime,interval,what FROM ds_job where stat=0 and nexttime <$1", now)
 	defer rows.Close()
-	var jobs []job
+	var jobs []JOB
 	//执行存储过程
 	for rows.Next() {
 
-		job := &job{}
+		job := &JOB{}
 		rows.Scan(&job.jobno, &job.nexttime, &job.interval, &job.what)
 		jobs = append(jobs, *job)
 	}
@@ -47,10 +48,10 @@ func queryJob(db *dbObj) []job {
 
 }
 
-func (this *job) setNextTime(db *dbObj) {
+func (this *JOB) setNextTime(db *db.DBOBJ) {
 	this.nexttime = getNextTime(this.interval)
 
-	stmt, err := db.db.Prepare("update ds_job set nexttime=$1 WHERE jobno=$2")
+	stmt, err := db.DB.Prepare("update ds_job set nexttime=$1 WHERE jobno=$2")
 	if err != nil {
 		log.Println("fail to update:%v", err)
 	}
@@ -60,10 +61,10 @@ func (this *job) setNextTime(db *dbObj) {
 
 }
 
-func (this *job) setStat(db *dbObj, stat int) {
+func (this *JOB) setStat(db *db.DBOBJ, stat int) {
 	this.stat = stat
 
-	stmt, err := db.db.Prepare("update ds_job set stat=$1 WHERE jobno=$2")
+	stmt, err := db.DB.Prepare("update ds_job set stat=$1 WHERE jobno=$2")
 	if err != nil {
 		log.Println("fail to update:%v", err)
 	}

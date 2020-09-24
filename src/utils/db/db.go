@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -7,17 +7,17 @@ import (
 	"log"
 )
 
-type dbObj struct {
-	db *sql.DB
+type DBOBJ struct {
+	DB *sql.DB
 }
 
 type dber interface {
-	connectDB() *sql.DB
+	ConnectDb() *sql.DB
 	close()
 	callPro(sql string)
 }
 
-func (this *dbObj) connectDB() *sql.DB {
+func (this *DBOBJ) ConnectDb() *sql.DB {
 	var (
 		cfg      *goconfig.ConfigFile
 		err      error
@@ -30,22 +30,22 @@ func (this *dbObj) connectDB() *sql.DB {
 	if psqlInfo, err = cfg.GetValue("postgres", "db"); err != nil {
 		log.Fatalf("无法获取数据库配置信息: %s", err)
 	}
-	if this.db, err = sql.Open("postgres", psqlInfo); err != nil {
+	if this.DB, err = sql.Open("postgres", psqlInfo); err != nil {
 		log.Fatalf("无法打开数据库连接:%s", err)
 	}
-	if err = this.db.Ping(); err != nil {
+	if err = this.DB.Ping(); err != nil {
 		log.Fatalf("数据库无法登录:%s", err)
 	}
-	return this.db
+	return this.DB
 }
 
-func (this *dbObj) close() {
-	this.db.Close()
+func (this *DBOBJ) Close() {
+	this.DB.Close()
 }
 
-func (this *dbObj) callPro(sql string) {
+func (this *DBOBJ) CallPro(sql string) {
 
-	if _, err := this.db.Exec(sql); err != nil {
+	if _, err := this.DB.Exec(sql); err != nil {
 		log.Print(err.Error())
 	}
 
