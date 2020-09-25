@@ -10,13 +10,13 @@ func ProRun() {
 	d.ConnectDb()
 	defer d.Close()
 
-	var rows []JOB
-	rows = queryJob(d)
+	var jobs []JOB
+	jobs = queryJob(d)
 
 	//执行存储过程
-	for _, job := range rows {
+	for _, j := range jobs {
 
-		go func() {
+		go func(job JOB) {
 
 			dbf := &db.DBOBJ{}
 			dbf.ConnectDb()
@@ -34,8 +34,10 @@ func ProRun() {
 			// fmt.Printf("now is %s next time is %s", time.Now(), job.nexttime)
 
 			job.setStat(dbf, 0)
+			//打印日志
+			log.Printf("存储过程 %s 执行结束", job.what)
 
-		}()
+		}(j)
 	}
 
 }

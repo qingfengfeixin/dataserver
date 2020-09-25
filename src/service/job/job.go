@@ -49,6 +49,7 @@ func queryJob(db *db.DBOBJ) []JOB {
 }
 
 func (this *JOB) setNextTime(db *db.DBOBJ) {
+
 	this.nexttime = getNextTime(this.interval)
 
 	stmt, err := db.DB.Prepare("update ds_job set nexttime=$1 WHERE jobno=$2")
@@ -73,7 +74,7 @@ func (this *JOB) setStat(db *db.DBOBJ, stat int) {
 	}
 }
 
-func getNextTime(interval string) time.Time {
+func  getNextTime(interval string) time.Time {
 	var (
 		expr     *cronexpr.Expression
 		err      error

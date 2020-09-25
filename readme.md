@@ -54,6 +54,7 @@ primary key(jobno)
 delete from ds_job;
 insert into ds_job(jobno,nexttime,interval,what) values(1,'2020-09-01','*/30 * * * * * *','call sp_t1()');
 insert into ds_job(jobno,nexttime,interval,what) values(2,'2020-09-01','71 * * * * * *','call sp_t1()');
+insert into ds_job(jobno,nexttime,interval,what) values(3,'2020-09-01','81 * * * * * *','call sp_t1()');
 
 
 ```
